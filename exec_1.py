@@ -42,7 +42,7 @@ def main():
     # Überprüfe, ob gesamt richtung_1 + richtung_2 entspricht
     df = df[(df['richtung_1'] + df['richtung_2']) == df['gesamt']]
 
-    df.to_csv(f"data/cleaned/{filename.split('.')[0]}_cleaned.csv")
+    df.to_csv(f"data/cleaned/{filename.split('.')[0]}_cleaned.csv", index=False)
 
     # Deskriptive Statistik
 
