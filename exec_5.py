@@ -26,8 +26,9 @@ app.layout = html.Div([
     
     # Main Content Wrapper
     html.Div([
-      # Dropdown Wrapper
+      # Dropdowns Wrapper
       html.Div([
+         # Jahr-Dropdown Wrapper
         html.Div([
           html.Label("Jahr", style={'marginBottom': '7px'}),
           dcc.Dropdown(
@@ -39,6 +40,7 @@ app.layout = html.Div([
             style={'width': '150px'}
           )
         ], style={'display': 'flex', 'alignItems': 'center', 'flexDirection': 'column'}),
+        # Zählstelle-Dropdown Wrapper
         html.Div([
           html.Label("Zählstelle", style={'marginBottom': '7px'}),
           dcc.Dropdown(
@@ -50,6 +52,7 @@ app.layout = html.Div([
             style={'width': '150px'}
           )
         ], style={'display': 'flex', 'alignItems': 'center', 'flexDirection': 'column'}),
+        # Richtungs-Dropdown Wrapper
         html.Div([
           html.Label("Richtung", style={'marginBottom': '7px'}),
           dcc.Dropdown(
@@ -61,7 +64,7 @@ app.layout = html.Div([
             style={'width': '150px'}
           )
         ], style={'display': 'flex', 'alignItems': 'center', 'flexDirection': 'column'}),
-      ], style={'display': 'flex', 'justifyContent': 'center', 'flexDirection': 'column', 'backgroundColor': '#f3f3f3', 'border-radius': '20px', 'padding': '20px', 'gap': '25px', 'height': 'min-content'}),
+      ], style={'display': 'flex', 'flexDirection': 'column', 'backgroundColor': '#f3f3f3', 'border-radius': '20px', 'padding': '20px', 'gap': '25px', 'height': 'min-content'}),
       
       
       # Graph für jährlichen Verlauf
@@ -81,14 +84,11 @@ app.layout = html.Div([
 )
 def update_graph(selected_year, selected_counting_point, selected_direction):
     global counting_points
+
     # Daten für die ausgewählte Zählstelle filtern
     df = pd.read_csv(f'data/cleaned/rad_{selected_year}_tage_19_06_23_r_cleaned.csv')
     counting_points = df['zaehlstelle'].unique()
-    
-    print(df['zaehlstelle'] == selected_counting_point)
-    # filtered_df = df[(df['datum'].str.split('-')[0] == selected_year) & (df['zaehlstelle'] == selected_counting_point)]
     filtered_df = df[(pd.to_datetime(df['datum']).dt.year == int(selected_year)) & (df['zaehlstelle'] == selected_counting_point)]
-    print(filtered_df)
     
     # Liniendiagramm erstellen
     fig = px.line(
@@ -98,10 +98,11 @@ def update_graph(selected_year, selected_counting_point, selected_direction):
         title=f"Jährlicher Verlauf für das Jahr {selected_year}",
         labels={'gesamt': 'Anzahl an Fahrrädern (gesamt)', 'richtung_1': 'Anzahl an Fahrrädern (Richtung 1)', 'richtung_2': 'Anzahl an Fahrrädern (Richtung 2)', 'datum': 'Datum'}
     )
+
     fig.update_layout(template='plotly_white')
-    
     return fig
 
+# Callback für die Aktualisierung der Zählstellen bei Jahreswechsel
 @app.callback(
   Output('counting-point-dropdown', 'options'),
   Output('counting-point-dropdown', 'value'),
@@ -114,6 +115,7 @@ def update_counting_point_dropdown(selected_year):
   value = zaehlstellen[0] if len(zaehlstellen) > 0 else None  # Standardwert setzen
   return options, value
 
+# Callback für das Zurücksetzen der Richtung auf "Beide" bei Jahreswechsel
 @app.callback(
   Output('direction-dropdown', 'value'),
   Input('year-dropdown', 'value')
