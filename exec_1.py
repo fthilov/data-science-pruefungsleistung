@@ -21,8 +21,8 @@ time_pattern = r'[0-9]{2}:[0-9]{2}'
 
 
 def main():  
-  for filename in sorted(os.listdir('data')):
-    df = pd.read_csv(f"data/{filename}", dtype=dtype)
+  for filename in sorted(os.listdir('data/initial')):
+    df = pd.read_csv(f"data/initial/{filename}", dtype=dtype)
 
     # Überprüfe Datum Spalte auf fehlerhafte Werte
     df = df[df['datum'].str.match(date_pattern)]
@@ -41,6 +41,8 @@ def main():
 
     # Überprüfe, ob gesamt richtung_1 + richtung_2 entspricht
     df = df[(df['richtung_1'] + df['richtung_2']) == df['gesamt']]
+
+    df.to_csv(f"data/cleaned/{filename.split('.')[0]}_cleaned.csv", index=False)
 
     # Deskriptive Statistik
 
