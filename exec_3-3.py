@@ -66,7 +66,7 @@ for zaehlstelle in summary_data["zaehlstelle"].unique():
     ylim_bottom, ylim_top = plt.gca().get_ylim()
 
     # Feste Y-Position für die Zahlen in den Balken
-    fixed_y_position = ylim_bottom + (ylim_top - ylim_bottom) * 0.1  # 10% vom unteren Rand der y-Achse
+    fixed_y_position = ylim_bottom + (ylim_top - ylim_bottom) * 0.05  # 5% vom unteren Rand der y-Achse
 
     # Werte in den Balken anzeigen (auf gleicher Höhe)
     for bar in bars:
