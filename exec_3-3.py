@@ -22,8 +22,10 @@ for file_name in os.listdir(data_folder):
             df = pd.read_csv(file_path)
             # Nur relevante Spalten behalten
             df = df[["datum", "zaehlstelle", "gesamt"]]
+
             # Datum in datetime umwandeln
             df["datum"] = pd.to_datetime(df["datum"], format="%Y-%m-%d")
+            df = df.dropna(subset=["gesamt"])
             all_data.append(df)
         except Exception as e:
             print(f"Fehler beim Verarbeiten der Datei {file_name}: {e}")
