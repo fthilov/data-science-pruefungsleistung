@@ -23,11 +23,9 @@ for file_name in os.listdir(data_folder):
 # Daten zusammenführen
 combined_data = pd.concat(all_data, ignore_index=True)
 
-# Datum in datetime umwandeln und Jahr extrahieren
 combined_data["datum"] = pd.to_datetime(combined_data["datum"], format="%Y-%m-%d")
 combined_data["jahr"] = combined_data["datum"].dt.year
 
-# Gruppieren nach Jahr und Zählstelle, Summieren der "gesamt"-Werte
 yearly_data = combined_data.groupby(["jahr", "zaehlstelle"])["gesamt"].sum().reset_index()
 
 # Visualisierung pro Jahr erstellen

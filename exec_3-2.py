@@ -24,14 +24,11 @@ for file_name in os.listdir(data_folder):
 # Alle Daten zusammenführen
 combined_data = pd.concat(all_data, ignore_index=True)
 
-# Datum in datetime umwandeln
 combined_data["datum"] = pd.to_datetime(combined_data["datum"], format="%Y-%m-%d")
 
-# Jahr und Quartal extrahieren
 combined_data["jahr"] = combined_data["datum"].dt.year
 combined_data["quartal"] = combined_data["datum"].dt.quarter
 
-# Daten nach Jahr und Quartal gruppieren und summieren
 quarterly_data = combined_data.groupby(["jahr", "quartal"])["gesamt"].sum().reset_index()
 
 # Visualisierung pro Jahr

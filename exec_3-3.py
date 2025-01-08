@@ -31,13 +31,10 @@ if not all_data:
 # Daten zusammenführen
 combined_data = pd.concat(all_data, ignore_index=True)
 
-# Datum in datetime umwandeln
 combined_data["datum"] = pd.to_datetime(combined_data["datum"], format="%Y-%m-%d")
 
-# Jahr extrahieren
 combined_data["jahr"] = combined_data["datum"].dt.year
 
-# Gruppieren nach Jahr und Zählstelle und Summieren der "gesamt"-Werte
 summary_data = combined_data.groupby(["jahr", "zaehlstelle"])["gesamt"].sum().reset_index()
 
 # Visualisierung erstellen
