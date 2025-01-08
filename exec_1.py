@@ -41,6 +41,9 @@ def main():
 
     # Überprüfe, ob gesamt richtung_1 + richtung_2 entspricht
     df = df[(df['richtung_1'] + df['richtung_2']) == df['gesamt']]
+    
+    if not os.path.exists("data/cleaned"):
+      os.mkdir("data/cleaned")
 
     df.to_csv(f"data/cleaned/{filename.split('.')[0]}_cleaned.csv", index=False)
 
