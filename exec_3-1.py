@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
 # Pfad zum Datenordner
-data_folder = "./data"
+data_folder = "./data/initial"
 
 # Leere Liste für Daten
 all_data = []
