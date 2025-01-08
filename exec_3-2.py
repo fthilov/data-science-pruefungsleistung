@@ -68,9 +68,9 @@ for year in quarterly_data["jahr"].unique():
             bar.get_x() + bar.get_width() / 2,  # X-Position
             fixed_y_position,
             f'{int(height):,}',  # Formatierte Zahl
-            ha='center', va='bottom', color='white', fontsize=10, fontweight="bold"
+            ha='center', va='bottom', color='black', fontsize=10, fontweight="bold"
         )
 
     plt.tight_layout()
     plt.savefig(f"./eval_3-2/quartal{year}.png")  # Optional: Speichere die Grafik
-    plt.show()
+    plt.close()

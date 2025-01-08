@@ -47,17 +47,23 @@ for year in yearly_data["jahr"].unique():
     plt.ylabel("Gesamtanzahl")
     plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
 
+    # Berechne den unteren Rand der y-Achse
+    ylim_bottom, ylim_top = plt.gca().get_ylim()
+
+    # Feste Y-Position für die Zahlen in den Balken
+    fixed_y_position = ylim_bottom + (ylim_top - ylim_bottom) * 0.05  # 5% vom unteren Rand der y-Achse
+
     # Werte unten im Balken anzeigen
     for bar in bars:
         height = bar.get_height()
         plt.text(
             bar.get_x() + bar.get_width() / 2,  # X-Position
-            5,                                 # Fester Y-Wert (knapp über der Balkenbasis)
+            fixed_y_position,                                 # Fester Y-Wert (knapp über der Balkenbasis)
             f'{int(height):,}',               # Formatierte Zahl
-            ha='center', va='bottom', color='white', fontsize=10, fontweight="bold"
+            ha='center', va='bottom', color='black', fontsize=10, fontweight="bold"
         )
 
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig(f"./eval_3-1/fahrradaufkommen_{year}.png")  # Optional: Speichere die Grafik
-    plt.show()
+    plt.close()
