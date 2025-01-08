@@ -3,76 +3,81 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
-data_folder = "./data/cleaned"
 
-output_folder = "./eval_3-3"
-os.makedirs(output_folder, exist_ok=True)
+def main():
+    data_folder = "./data/cleaned"
 
-all_data = []
+    output_folder = "./eval_3-3"
+    os.makedirs(output_folder, exist_ok=True)
 
-for file_name in os.listdir(data_folder):
-    if "tage" in file_name and file_name.endswith(".csv"):
-        file_path = os.path.join(data_folder, file_name)
+    all_data = []
 
-        try:
-            df = pd.read_csv(file_path)
+    for file_name in os.listdir(data_folder):
+        if "tage" in file_name and file_name.endswith(".csv"):
+            file_path = os.path.join(data_folder, file_name)
 
-            df = df[["datum", "zaehlstelle", "gesamt"]]
+            try:
+                df = pd.read_csv(file_path)
 
-            all_data.append(df)
-        except Exception as e:
-            print(f"Fehler beim Verarbeiten der Datei {file_name}: {e}")
+                df = df[["datum", "zaehlstelle", "gesamt"]]
 
-# Überprüfen, ob Daten vorhanden sind
-if not all_data:
-    print("Keine passenden Dateien gefunden oder Daten sind leer.")
-    exit()
+                all_data.append(df)
+            except Exception as e:
+                print(f"Fehler beim Verarbeiten der Datei {file_name}: {e}")
 
-# Daten zusammenführen
-combined_data = pd.concat(all_data, ignore_index=True)
+    # Überprüfen, ob Daten vorhanden sind
+    if not all_data:
+        print("Keine passenden Dateien gefunden oder Daten sind leer.")
+        exit()
 
-combined_data["datum"] = pd.to_datetime(combined_data["datum"], format="%Y-%m-%d")
+    # Daten zusammenführen
+    combined_data = pd.concat(all_data, ignore_index=True)
 
-combined_data["jahr"] = combined_data["datum"].dt.year
+    combined_data["datum"] = pd.to_datetime(combined_data["datum"], format="%Y-%m-%d")
 
-summary_data = combined_data.groupby(["jahr", "zaehlstelle"])["gesamt"].sum().reset_index()
+    combined_data["jahr"] = combined_data["datum"].dt.year
 
-# Visualisierung erstellen
-for zaehlstelle in summary_data["zaehlstelle"].unique():
-    data_for_zaehlstelle = summary_data[summary_data["zaehlstelle"] == zaehlstelle]
+    summary_data = combined_data.groupby(["jahr", "zaehlstelle"])["gesamt"].sum().reset_index()
 
-    plt.figure(figsize=(10, 6))
-    bars = plt.bar(
-        data_for_zaehlstelle["jahr"],
-        data_for_zaehlstelle["gesamt"],
-        color="steelblue"
-    )
+    # Visualisierung erstellen
+    for zaehlstelle in summary_data["zaehlstelle"].unique():
+        data_for_zaehlstelle = summary_data[summary_data["zaehlstelle"] == zaehlstelle]
 
-    # Titel und Achsenbeschriftung
-    plt.title(f"Fahrradaufkommen der Zählstelle {zaehlstelle}")
-    plt.xlabel("Jahr")
-    plt.ylabel("Gesamtanzahl")
-    plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # Zahlenformatierung
-
-    # Werte in den Balken anzeigen (senkrecht)
-    # Berechne den unteren Rand der y-Achse
-    ylim_bottom, ylim_top = plt.gca().get_ylim()
-
-    # Feste Y-Position für die Zahlen in den Balken
-    fixed_y_position = ylim_bottom + (ylim_top - ylim_bottom) * 0.05  # 5% vom unteren Rand der y-Achse
-
-    # Werte in den Balken anzeigen (auf gleicher Höhe)
-    for bar in bars:
-        bar_height = bar.get_height()  # Höhe des Balkens
-        plt.text(
-            bar.get_x() + bar.get_width() / 2,  # X-Position
-            fixed_y_position,  # Feste Y-Position
-            f'{int(bar_height):,}',  # Formatierte Zahl
-            ha='center', va='bottom', color='black', fontsize=10, fontweight="bold", rotation=90
+        plt.figure(figsize=(10, 6))
+        bars = plt.bar(
+            data_for_zaehlstelle["jahr"],
+            data_for_zaehlstelle["gesamt"],
+            color="steelblue"
         )
 
-    # Layout anpassen
-    plt.tight_layout()
+        # Titel und Achsenbeschriftung
+        plt.title(f"Fahrradaufkommen der Zählstelle {zaehlstelle}")
+        plt.xlabel("Jahr")
+        plt.ylabel("Gesamtanzahl")
+        plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # Zahlenformatierung
 
-    plt.savefig(f"./eval_3-3/fahrradaufkommen_{zaehlstelle}.png")
-    plt.close()  # Verhindert das Öffnen vieler Fenster
+        # Werte in den Balken anzeigen (senkrecht)
+        # Berechne den unteren Rand der y-Achse
+        ylim_bottom, ylim_top = plt.gca().get_ylim()
+
+        # Feste Y-Position für die Zahlen in den Balken
+        fixed_y_position = ylim_bottom + (ylim_top - ylim_bottom) * 0.05  # 5% vom unteren Rand der y-Achse
+
+        # Werte in den Balken anzeigen (auf gleicher Höhe)
+        for bar in bars:
+            bar_height = bar.get_height()  # Höhe des Balkens
+            plt.text(
+                bar.get_x() + bar.get_width() / 2,  # X-Position
+                fixed_y_position,  # Feste Y-Position
+                f'{int(bar_height):,}',  # Formatierte Zahl
+                ha='center', va='bottom', color='black', fontsize=10, fontweight="bold", rotation=90
+            )
+
+        # Layout anpassen
+        plt.tight_layout()
+
+        plt.savefig(f"./eval_3-3/fahrradaufkommen_{zaehlstelle}.png")
+        plt.close()
+
+if __name__ == '__main__':
+  main()
