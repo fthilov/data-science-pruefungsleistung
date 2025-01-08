@@ -3,25 +3,19 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
-# Ordner mit den Daten
 data_folder = "./data/initial"
 
-# Leere Liste für alle Daten
 all_data = []
 
-# Suche nach Dateien mit "tage" im Namen
 for file_name in os.listdir(data_folder):
     if "tage" in file_name and file_name.endswith(".csv"):
         file_path = os.path.join(data_folder, file_name)
 
-        # CSV-Datei einlesen
         try:
             df = pd.read_csv(file_path)
 
-            # Bereinigen: Nur relevante Spalten auswählen
             df = df[["datum", "gesamt"]]
 
-            # Hinzufügen zur Liste
             all_data.append(df)
         except Exception as e:
             print(f"Fehler beim Verarbeiten der Datei {file_name}: {e}")

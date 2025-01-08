@@ -3,34 +3,27 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
-# Ordner mit den Daten
 data_folder = "./data/initial"
 
-# Ordner zum Speichern der Diagramme
 output_folder = "./eval_3-3"
 os.makedirs(output_folder, exist_ok=True)
 
-# Leere Liste für alle Daten
 all_data = []
 
-# Durchsuche den Ordner nach Dateien mit "tage" im Namen
 for file_name in os.listdir(data_folder):
     if "tage" in file_name and file_name.endswith(".csv"):
-        print(f"Verarbeite Datei: {file_name}")
         file_path = os.path.join(data_folder, file_name)
+
         try:
             df = pd.read_csv(file_path)
-            # Nur relevante Spalten behalten
+
             df = df[["datum", "zaehlstelle", "gesamt"]]
 
-            # Datum in datetime umwandeln
             df["datum"] = pd.to_datetime(df["datum"], format="%Y-%m-%d")
             df = df.dropna(subset=["gesamt"])
             all_data.append(df)
         except Exception as e:
             print(f"Fehler beim Verarbeiten der Datei {file_name}: {e}")
-    else:
-        print(f"Überspringe Datei: {file_name}")
 
 # Überprüfen, ob Daten vorhanden sind
 if not all_data:
@@ -83,7 +76,5 @@ for zaehlstelle in summary_data["zaehlstelle"].unique():
     # Layout anpassen
     plt.tight_layout()
 
-    # Diagramm speichern
-    output_path = os.path.join(output_folder, f"fahrradaufkommen_{zaehlstelle}.png")
-    plt.savefig(output_path)
+    plt.savefig(f"./eval_3-3/fahrradaufkommen_{zaehlstelle}.png")
     plt.close()  # Verhindert das Öffnen vieler Fenster
