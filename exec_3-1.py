@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
-data_folder = "./data/initial"
+data_folder = "./data/cleaned"
 
 all_data = []
 
@@ -15,7 +15,6 @@ for file_name in os.listdir(data_folder):
             df = pd.read_csv(file_path)
 
             df = df[["datum", "zaehlstelle", "gesamt"]]
-            df = df.dropna(subset=["gesamt"])
 
             all_data.append(df)
         except Exception as e:

@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
-data_folder = "./data/initial"
+data_folder = "./data/cleaned"
 
 output_folder = "./eval_3-3"
 os.makedirs(output_folder, exist_ok=True)
@@ -19,8 +19,6 @@ for file_name in os.listdir(data_folder):
 
             df = df[["datum", "zaehlstelle", "gesamt"]]
 
-            df["datum"] = pd.to_datetime(df["datum"], format="%Y-%m-%d")
-            df = df.dropna(subset=["gesamt"])
             all_data.append(df)
         except Exception as e:
             print(f"Fehler beim Verarbeiten der Datei {file_name}: {e}")
@@ -32,6 +30,9 @@ if not all_data:
 
 # Daten zusammenführen
 combined_data = pd.concat(all_data, ignore_index=True)
+
+# Datum in datetime umwandeln
+combined_data["datum"] = pd.to_datetime(combined_data["datum"], format="%Y-%m-%d")
 
 # Jahr extrahieren
 combined_data["jahr"] = combined_data["datum"].dt.year

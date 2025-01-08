@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
-data_folder = "./data/initial"
+data_folder = "./data/cleaned"
 
 all_data = []
 
