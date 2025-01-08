@@ -62,12 +62,19 @@ for zaehlstelle in summary_data["zaehlstelle"].unique():
     plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # Zahlenformatierung
 
     # Werte in den Balken anzeigen (senkrecht)
+    # Berechne den unteren Rand der y-Achse
+    ylim_bottom, ylim_top = plt.gca().get_ylim()
+
+    # Feste Y-Position für die Zahlen in den Balken
+    fixed_y_position = ylim_bottom + (ylim_top - ylim_bottom) * 0.1  # 10% vom unteren Rand der y-Achse
+
+    # Werte in den Balken anzeigen (auf gleicher Höhe)
     for bar in bars:
-        height = bar.get_height()
+        bar_height = bar.get_height()  # Höhe des Balkens
         plt.text(
             bar.get_x() + bar.get_width() / 2,  # X-Position
-            height * 0.05,  # Y-Position knapp über der Balkenbasis
-            f'{int(height):,}',  # Formatierte Zahl
+            fixed_y_position,  # Feste Y-Position
+            f'{int(bar_height):,}',  # Formatierte Zahl
             ha='center', va='bottom', color='black', fontsize=10, fontweight="bold", rotation=90
         )
 
