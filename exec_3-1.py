@@ -20,6 +20,7 @@ for file_name in os.listdir(data_folder):
 
             # Bereinigen: Nur relevante Spalten auswählen
             df = df[["datum", "zaehlstelle", "gesamt"]]
+            df = df.dropna(subset=["gesamt"])
 
             # Hinzufügen zur Liste
             all_data.append(df)
