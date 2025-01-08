@@ -56,12 +56,17 @@ for year in quarterly_data["jahr"].unique():
     plt.ylabel("Gesamtanzahl")
     plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
 
+    ylim_bottom, ylim_top = plt.gca().get_ylim()
+
+    # Feste Y-Position für die Zahlen in den Balken
+    fixed_y_position = ylim_bottom + (ylim_top - ylim_bottom) * 0.05  # 5% vom unteren Rand der y-Achse
+
     # Werte in den Balken anzeigen
     for bar in bars:
         height = bar.get_height()
         plt.text(
             bar.get_x() + bar.get_width() / 2,  # X-Position
-            height * 0.05,  # Y-Position knapp über der Balkenbasis
+            fixed_y_position,
             f'{int(height):,}',  # Formatierte Zahl
             ha='center', va='bottom', color='white', fontsize=10, fontweight="bold"
         )
