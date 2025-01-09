@@ -21,7 +21,6 @@ def main():
             except Exception as e:
                 print(f"Fehler beim Verarbeiten der Datei {file_name}: {e}")
 
-
     # Alle Daten zusammenführen
     combined_data = pd.concat(all_data, ignore_index=True)
 
@@ -31,7 +30,6 @@ def main():
     combined_data["quartal"] = combined_data["datum"].dt.quarter
 
     quarterly_data = combined_data.groupby(["jahr", "quartal"])["gesamt"].sum().reset_index()
-
 
     # Visualisierung pro Jahr
     for year in quarterly_data["jahr"].unique():
@@ -69,6 +67,24 @@ def main():
             os.mkdir("eval_3-2")
         plt.savefig(f"./eval_3-2/quartal{year}.png")
         plt.close()
+
+    # Kombinierte Visualisierung für alle Jahre
+    plt.figure(figsize=(10, 8))
+    for year in quarterly_data["jahr"].unique():
+        data_for_year = quarterly_data[quarterly_data["jahr"] == year]
+        quartals = data_for_year["quartal"]
+        values = data_for_year["gesamt"]
+        plt.plot(quartals, values, marker='o', label=f"Jahr {year}")
+
+    plt.title("Fahrradaufkommen pro Quartal (Jahresvergleich)")
+    plt.xlabel("Quartale")
+    plt.ylabel("Gesamtanzahl")
+    plt.xticks([1, 2, 3, 4], ["Q1", "Q2", "Q3", "Q4"])
+    plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("./eval_3-2/gesamt_quartale.png")
+    plt.close()
 
 if __name__ == '__main__':
   main()
