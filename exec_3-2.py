@@ -32,6 +32,7 @@ def main():
 
     quarterly_data = combined_data.groupby(["jahr", "quartal"])["gesamt"].sum().reset_index()
 
+
     # Visualisierung pro Jahr
     for year in quarterly_data["jahr"].unique():
         data_for_year = quarterly_data[quarterly_data["jahr"] == year]
@@ -64,6 +65,8 @@ def main():
             )
 
         plt.tight_layout()
+        if not os.path.exists("eval_3-2"):
+            os.mkdir("eval_3-2")
         plt.savefig(f"./eval_3-2/quartal{year}.png")
         plt.close()
 

@@ -59,8 +59,11 @@ def main():
 
         plt.xticks(rotation=45)
         plt.tight_layout()
+        if not os.path.exists("eval_3-1"):
+            os.mkdir("eval_3-1")
         plt.savefig(f"./eval_3-1/fahrradaufkommen_{year}.png")
         plt.close()
+
 
 if __name__ == '__main__':
   main()
