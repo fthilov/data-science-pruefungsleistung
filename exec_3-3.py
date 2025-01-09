@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
-
 def main():
     data_folder = "./data/cleaned"
 
@@ -41,43 +40,132 @@ def main():
 
     # Visualisierung erstellen
     for zaehlstelle in summary_data["zaehlstelle"].unique():
-        data_for_zaehlstelle = summary_data[summary_data["zaehlstelle"] == zaehlstelle]
+        data_for_zaehlstelle = summary_data.loc[summary_data["zaehlstelle"] == zaehlstelle].copy()
+        data_for_zaehlstelle["wachstumsrate"] = data_for_zaehlstelle["gesamt"].pct_change() * 100
+        data_for_zaehlstelle.loc[(data_for_zaehlstelle["wachstumsrate"] > 160) | (data_for_zaehlstelle["wachstumsrate"] < -50), "wachstumsrate"] = None
 
-        plt.figure(figsize=(10, 6))
-        bars = plt.bar(
+        fig, ax1 = plt.subplots(figsize=(10, 6))
+
+        bars = ax1.bar(
             data_for_zaehlstelle["jahr"],
             data_for_zaehlstelle["gesamt"],
             color="steelblue"
         )
 
-        # Titel und Achsenbeschriftung
-        plt.title(f"Fahrradaufkommen der Zählstelle {zaehlstelle}")
-        plt.xlabel("Jahr")
-        plt.ylabel("Gesamtanzahl")
-        plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # Zahlenformatierung
+        ax1.set_xlabel("Jahr")
+        ax1.set_ylabel("Gesamtanzahl")
+        ax1.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # Zahlenformatierung
+        ax1.tick_params(axis='y')
 
-        # Werte in den Balken anzeigen (senkrecht)
-        # Berechne den unteren Rand der y-Achse
-        ylim_bottom, ylim_top = plt.gca().get_ylim()
-
-        # Feste Y-Position für die Zahlen in den Balken
-        fixed_y_position = ylim_bottom + (ylim_top - ylim_bottom) * 0.05  # 5% vom unteren Rand der y-Achse
-
-        # Werte in den Balken anzeigen (auf gleicher Höhe)
         for bar in bars:
-            bar_height = bar.get_height()  # Höhe des Balkens
-            plt.text(
-                bar.get_x() + bar.get_width() / 2,  # X-Position
-                fixed_y_position,  # Feste Y-Position
-                f'{int(bar_height):,}',  # Formatierte Zahl
-                ha='center', va='bottom', color='black', fontsize=10, fontweight="bold", rotation=90
+            bar_height = bar.get_height()
+            ax1.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar_height,
+                f'{int(bar_height):,}',
+                ha='center', va='bottom', color='black', fontsize=10, fontweight="bold"
             )
 
-        # Layout anpassen
-        plt.tight_layout()
+        ax2 = ax1.twinx()
+        ax2.plot(
+            data_for_zaehlstelle["jahr"],
+            data_for_zaehlstelle["wachstumsrate"],
+            color="darkgreen",
+            marker="o",
+            label="Wachstumsrate"
+        )
+        ax2.set_ylabel("Wachstumsrate (%)")
+        ax2.tick_params(axis='y')
 
+        lines, labels = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax1.legend(lines + lines2, labels + labels2, loc="upper left")
+
+        plt.title(f"Fahrradaufkommen der Zählstelle {zaehlstelle} mit Wachstumsrate")
+        plt.tight_layout()
         plt.savefig(f"./eval_3-3/fahrradaufkommen_{zaehlstelle}.png")
         plt.close()
 
+    # Graph für alle Standorte zusammen
+    combined_summary = combined_data.groupby("jahr")["gesamt"].sum().reset_index()
+    combined_summary["wachstumsrate"] = combined_summary["gesamt"].pct_change() * 100
+
+    # Durchschnittliche Wachstumsrate der letzten 8 Jahre berechnen
+    recent_years = combined_summary.tail(8)
+    avg_growth_rate = recent_years["wachstumsrate"].mean()
+
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+
+    bars = ax1.bar(
+        combined_summary["jahr"],
+        combined_summary["gesamt"],
+        color="darkorange",
+        label="Gesamtanzahl"
+    )
+    ax1.set_xlabel("Jahr")
+    ax1.set_ylabel("Gesamtanzahl")
+    ax1.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # Zahlenformatierung
+    ax1.tick_params(axis='y')
+
+    for bar in bars:
+        bar_height = bar.get_height()
+        ax1.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar_height,
+            f'{int(bar_height):,}',
+            ha='center', va='bottom', color='black', fontsize=10, fontweight="bold"
+        )
+
+    ax2 = ax1.twinx()
+    ax2.plot(
+        combined_summary["jahr"],
+        combined_summary["wachstumsrate"],
+        color="blue",
+        marker="o",
+        label="Wachstumsrate"
+    )
+    ax2.set_ylabel("Wachstumsrate (%)")
+    ax2.tick_params(axis='y')
+
+    # Durchschnittliche Wachstumsrate als horizontale Linie anzeigen
+    ax2.axhline(y=avg_growth_rate, color='red', linestyle='--', linewidth=2, label=f'Durchschnitt letzte 8 Jahre: {avg_growth_rate:.2f}%', alpha=1.0)
+
+    lines, labels = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2, loc="upper left")
+
+    plt.title("Gesamtes Fahrradaufkommen aller Zählstellen mit Wachstumsrate")
+    plt.tight_layout()
+    plt.savefig(f"./eval_3-3/gesamt_fahrradaufkommen_mit_wachstumsrate.png")
+    plt.close()
+
+    # Graph für Gesamtanzahl pro Zählstelle
+    total_per_zaehlstelle = combined_data.groupby("zaehlstelle")[["gesamt"]].sum().reset_index().sort_values(by="gesamt", ascending=False)
+
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(
+        total_per_zaehlstelle["zaehlstelle"],
+        total_per_zaehlstelle["gesamt"],
+        color="seagreen"
+    )
+
+    plt.title("Gesamtanzahl pro Zählstelle")
+    plt.xlabel("Zählstelle")
+    plt.ylabel("Gesamtanzahl")
+    plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # Zahlenformatierung
+
+    for bar in bars:
+        bar_height = bar.get_height()
+        plt.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar_height,
+            f'{int(bar_height):,}',
+            ha='center', va='bottom', color='black', fontsize=10, fontweight="bold"
+        )
+
+    plt.tight_layout()
+    plt.savefig(f"./eval_3-3/gesamtanzahl_pro_zaehlstelle.png")
+    plt.close()
+
 if __name__ == '__main__':
-  main()
+    main()
